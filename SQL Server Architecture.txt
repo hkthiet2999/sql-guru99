@@ -1,0 +1,53 @@
+https://www.guru99.com/sql-server-architecture.html?fbclid=IwAR3xJqprDhUr_X0N7Rq1UPWpoIID1xAwAgpGO5T1-RBOiye2NOIKEFAlEvk
+
+- SQL Server Architecture:
+
+  1. Protocol Layer
+  2. Relational Engine
+  3. Storage Engine
+
+
+## Protocol Layer – SNI:
+1. Shared Memory: Client - Server trên cùng 1 máy host
+2. TCP/IP: Client - Server comunication qua Giao thức TCP/IP - khác máy
+3. Named Pipes: Client - Server comunication qua mạng LAN, WAN các kiểu
+
+
+## Relational Engine
+
+1. CMD Parser: Parse syntax, có lỗi thì throw error, ko có lỗi thì gen ra Query Tree
+2. Optimizer: Tạo 1 kế hoạch thực thi câu truy vấn, not at all, ưu tiên chi phí, ko ưu tiên tốc độ
+	Chia làm 3 Phase
+		Phase 0: Search for Trivial Plan: (tiền Optimize) Tầm thường, đơn giản, dễ, nhanh gọn
+		Phase 1: Search for Transaction processing plans: (Optimize đơn giản)
+		Phase 2: Parallel Processing and Optimization. ( Optimize phức tạp)
+
+3. Query Executor:
+ * Call tới Access Method:  
+- Thực thi logic tìm nạp dữ liệu
+- Nhận dữ liệu từ Storage Engine, kết quả sẽ được xuất bản lên Protocol Layer
+- Cuối cùng, dữ liệu được gửi đến người end user
+
+## Storage Engine
+Storage Engine lưu trữ dữ liệu trong hệ thống lưu trữ như Disk hoặc SAN và truy xuất dữ liệu khi cần thiết.
+
+- Data File and Extent: Lưu tữ dữ liệu vật lý dưới dạng Pages
+	1 Extend = 8 Pages, total size = 64KB ( 1 Page = 8 KB)
+- File types:
+	Primary file
+	Secondary file
+	Log File
+- Access Method:
+Hoạt động như 1 Interface giữa Query Executor và Buffer Manager/ Transaction Logs
+
+Buffer Manager: Quản lý các chức năng cốt lõi cho Plan Cache, Data Parsing & Dirty Page.
+
+Transaction Manager: Quản lý Non-Select Transaction với sự trợ giúp của Log Manager và Lock Manager. Ngoài ra, tạo điều kiện thực hiện quan trọng của Write Ahead logging và Lazy writers.
+
+
++ Log Manager: Theo dõi tất cả các cập nhật được thực hiện trong hệ thống thông qua các bản ghi trong Transaction Logs
++ Lag Manager: Trong quá trình Giao dịch, dữ liệu được liên kết trong Data Storage ở trạng thái Khóa. Quá trình này được xử lý bởi Lock Manager.
+Quá trình này đảm bảo tính nhất quán và cách ly dữ liệu. Còn được gọi là thuộc tính ACID.
+
+
+
